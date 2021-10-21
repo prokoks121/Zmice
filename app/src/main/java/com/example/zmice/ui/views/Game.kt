@@ -1,6 +1,7 @@
 package com.example.zmice.ui.views
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
@@ -25,6 +26,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.zmice.GameApplication
 import com.example.zmice.models.DefaultSettings
 import com.example.zmice.models.Zmica
 import com.example.zmice.polje.Polje
@@ -162,15 +167,30 @@ class Game(val settings: DefaultSettings, val mapaPolja: ArrayList<Polje>, val z
 @ExperimentalComposeUiApi
 @Composable
 fun Zmijce(
-    OnCollisn:() -> Unit,
-    viewModel: GameViewModel = GameViewModel()
+    OnCollisn:(Int) -> Unit,
+   application:Application
 ){
+
+    val factory = object : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            val repository = (application as GameApplication).repository
+
+            @Suppress("UNCHECKED_CAST")
+            return GameViewModel(
+                repository = repository
+            ) as T
+        }
+    }
+
+    val viewModel: GameViewModel = viewModel(factory = factory)
+
     val settings by viewModel.settings.observeAsState()
     val zmica by viewModel.zmica.observeAsState()
     val mapaPolja by viewModel.mapaPolja.observeAsState()
     var scores by remember {
-        mutableStateOf(0)
+        mutableStateOf(viewModel.score)
     }
+
     val game by remember {
         mutableStateOf(mapaPolja?.let { settings?.let { it1 -> zmica?.let { it2 -> Game(settings = it1,mapaPolja = it,zmica = it2) } } })
     }
@@ -179,6 +199,7 @@ fun Zmijce(
             Mapa(game = game,scores = scores,
             updateScore = {
                 scores += it
+                viewModel.score = scores
             },onClick = {
                     val growCheck = game.growCheck()
                     when (it) {
@@ -195,10 +216,12 @@ fun Zmijce(
                             game.pomeriULevo()
                         }
                     }
-                    game.checkCollision(OnCollisn)
+                    game.checkCollision { OnCollisn(scores) }
                     if (growCheck) {
                         game.uvecatiZmijcu(onCall = {score->
                             scores +=score
+                            viewModel.score = scores
+
                         })
                     }
                     CoroutineScope(Dispatchers.Default).launch {
@@ -312,7 +335,8 @@ fun Mapa(game:Game, scores: Int, onClick:(Int) -> Unit, updateScore:(Int) -> Uni
 
 @Composable
 fun Score(score:Int){
-    Text(modifier = Modifier.fillMaxWidth()
+    Text(modifier = Modifier
+        .fillMaxWidth()
         .padding(top = 10.dp, bottom = 10.dp),
         text = "Score",
         fontSize = 35.sp,
@@ -322,7 +346,8 @@ fun Score(score:Int){
     )
 
 
-        Text(modifier = Modifier.fillMaxWidth()
+        Text(modifier = Modifier
+            .fillMaxWidth()
             .padding(bottom = 10.dp),
             text = score.toString(),
             fontSize = 35.sp,

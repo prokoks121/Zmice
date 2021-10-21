@@ -12,10 +12,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.zmice.models.Score
 import com.example.zmice.ui.views.Zmijce
 import com.example.zmice.ui.views.home
 import com.example.zmice.ui.views.settings
 import com.example.zmice.ui.views.splashScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -50,15 +54,17 @@ class MainActivity : ComponentActivity() {
                 settings()
             }
             composable("Home") {
-                home {
+                home (navigateTo= {
                     navigationActions.navigateTo(it,popUp = false)
-                }
+                },application = application as GameApplication)
             }
             composable("Game") {
                 Zmijce(OnCollisn = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        (application as GameApplication).repository.insert(Score(score=it,name = "Micaga"))
+                    }
                     navigationActions.navigateTo("Home")
-
-                })
+                },application= application)
             }
         }
 

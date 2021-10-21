@@ -2,13 +2,11 @@ package com.example.zmice.ui.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.zmice.repository.Repository
+import com.example.zmice.repository.GameRepository
 
 class SettingsViewModel:ViewModel() {
 
-    val settings by lazy {
-        MutableLiveData(Repository.getSettings())
-    }
+
 
 
 }
