@@ -46,7 +46,7 @@ fun SetName(setName:(String) ->Unit){
                 onValueChange = {
                     if (it.length <= 8) text = it
                 })
-        if(text == "")
+        if(text != "")
             Box(modifier = Modifier
                 .background(color = Color(0xFFE98B00),shape = RoundedCornerShape(15.dp))
                 .clickable {
