@@ -3,13 +3,9 @@ package com.example.zmice.ui.viewmodels
 import androidx.lifecycle.*
 import com.example.zmice.repository.GameRepository
 import com.example.zmice.models.DefaultSettings
-import com.example.zmice.polje.Polje
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.zmice.models.Polje
 
 class GameViewModel(private val repository: GameRepository):ViewModel() {
-
 
     val settings by lazy {
         MutableLiveData<DefaultSettings>(repository.getSettings())

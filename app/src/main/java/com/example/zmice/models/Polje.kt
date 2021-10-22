@@ -1,12 +1,8 @@
-package com.example.zmice.polje
+package com.example.zmice.models
 
 import androidx.compose.ui.graphics.Color
 enum class PoljeType{
     SLOBODNO,ZMIJCA,HRANA,ZID
 }
 
-class Polje( var type:PoljeType,var color:Color){
-
-
-
-}
+data class Polje(var type: PoljeType, var color:Color)

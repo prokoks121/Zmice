@@ -11,6 +11,6 @@ interface ScoreDao {
     @Query("SELECT * FROM scores ORDER BY score DESC LIMIT 1")
     fun getScores(): Score
 
-  @Insert(onConflict = OnConflictStrategy.IGNORE)
-  fun addScore(score: Score)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun addScore(score: Score)
 }

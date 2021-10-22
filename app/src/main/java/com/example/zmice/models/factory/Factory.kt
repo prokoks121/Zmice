@@ -3,8 +3,8 @@ package com.example.zmice.models.factory
 import androidx.compose.ui.graphics.Color
 import com.example.zmice.models.DefaultSettings
 import com.example.zmice.models.Zmica
-import com.example.zmice.polje.Polje
-import com.example.zmice.polje.PoljeType
+import com.example.zmice.models.Polje
+import com.example.zmice.models.PoljeType
 
 object Factory {
 
@@ -27,13 +27,9 @@ object Factory {
                     mapaPolja.add(Polje(PoljeType.HRANA, Color.Green))
                 else
                     mapaPolja.add(Polje(PoljeType.SLOBODNO, Color.Gray))
-
         }
         return mapaPolja
     }
-
-
-
 
     fun generateZmica(settings: DefaultSettings):Zmica{
         val zmica = Zmica(duzinaZmijce = settings.duzina)

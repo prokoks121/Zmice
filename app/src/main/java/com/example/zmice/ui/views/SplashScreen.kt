@@ -17,7 +17,7 @@ import com.example.zmice.R
 import kotlinx.coroutines.delay
 
 @Composable
-fun splashScreen(navigate:(String)-> Unit){
+fun SolashScreen(navigate:(String)-> Unit){
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }

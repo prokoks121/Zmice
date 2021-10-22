@@ -15,14 +15,11 @@ public abstract class GameDatabase : RoomDatabase() {
 
     abstract fun scoreDao():ScoreDao
 
-
     companion object {
-
         @Volatile
         private var INSTANCE: GameDatabase? = null
 
         fun getDatabase(context: Context): GameDatabase {
-
             return INSTANCE
                 ?: synchronized(this) {     // if the INSTANCE is not null, then return it,
                     // if it is, then create the database

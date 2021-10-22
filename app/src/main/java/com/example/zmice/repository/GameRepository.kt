@@ -6,10 +6,9 @@ import com.example.zmice.models.DefaultSettings
 import com.example.zmice.models.Score
 import com.example.zmice.models.Zmica
 import com.example.zmice.models.factory.Factory
-import com.example.zmice.polje.Polje
+import com.example.zmice.models.Polje
 
 class GameRepository(private val scoreDao:ScoreDao) {
-
 
     private var setting = DefaultSettings()
 
@@ -19,16 +18,15 @@ class GameRepository(private val scoreDao:ScoreDao) {
     fun getSettings():DefaultSettings{
         return setting
     }
-
     fun getMapaPolja( settings: DefaultSettings,
                       pozicijaY: ArrayList<Int>):ArrayList<Polje>
     {
         return  Factory.generateMapaPolja(settings,pozicijaY)
     }
-
     fun getZmica(settings: DefaultSettings): Zmica {
         return Factory.generateZmica(settings)
     }
+
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun getScore():  Score{

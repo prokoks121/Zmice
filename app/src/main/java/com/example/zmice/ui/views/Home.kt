@@ -32,18 +32,12 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun home(navigateTo:(String)->Unit,application: GameApplication){
-    var bestScore by remember{
-        mutableStateOf(Score(0,0,""))
+fun Home(navigateTo:(String)->Unit, application: GameApplication,score:State<Score?>){
+
+    val bestScore by remember(score.value){
+        mutableStateOf(score.value)
     }
 
-
-
-    CoroutineScope(Dispatchers.IO).launch{
-        delay(300L)
-        bestScore =application.repository.getScore()
-        Log.d("Provera",bestScore.toString())
-    }
 
     Surface(modifier = Modifier
         .fillMaxSize()
@@ -81,19 +75,13 @@ fun home(navigateTo:(String)->Unit,application: GameApplication){
                         contentDescription = "wall",
                         contentScale = ContentScale.Crop)
                 }
-
-               /* Button(colors = ButtonDefaults.buttonColors(Color.Red),
-                    onClick = { navigateTo("Settings") }) {
-                    Text(text = "Settings")
-                }*/
             }
-
         }
     }
 }
 
 @Composable
-fun BestScore(score: Score = Score(0,50,"Miki")){
+fun BestScore(score: Score? = Score(0,50,"Miki")){
     Text(modifier = Modifier
         .padding(bottom = 10.dp),
         text = "BestScore",
@@ -103,34 +91,24 @@ fun BestScore(score: Score = Score(0,50,"Miki")){
         fontWeight = FontWeight.Bold
     )
     Row(modifier = Modifier
-
-        .padding( bottom = 20.dp)
-    ,verticalAlignment = Alignment.CenterVertically) {
-        Text(modifier = Modifier,
-
-                text = score.name,
+        .padding( bottom = 20.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        score?.let {
+            Text(modifier = Modifier,
+                text = it.name,
                 fontSize = 35.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            )
-
+                fontWeight = FontWeight.Bold)
 
         Text(modifier = Modifier
             .padding(start = 10.dp),
-            text = score.score.toString(),
+            text = it.score.toString(),
             fontSize = 35.sp,
             color = Color.White,
             textAlign = TextAlign.Center)
+            }
     }
-
-
-}
-
-@Preview
-@Composable
-fun prewi(){
-    home(navigateTo = { "a" }, application = GameApplication())
 }
 
 

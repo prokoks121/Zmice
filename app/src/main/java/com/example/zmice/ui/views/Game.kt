@@ -2,7 +2,6 @@ package com.example.zmice.ui.views
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.util.Log
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -32,8 +31,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.zmice.GameApplication
 import com.example.zmice.models.DefaultSettings
 import com.example.zmice.models.Zmica
-import com.example.zmice.polje.Polje
-import com.example.zmice.polje.PoljeType
+import com.example.zmice.models.Polje
+import com.example.zmice.models.PoljeType
 import com.example.zmice.ui.viewmodels.GameViewModel
 import com.example.zmice.ui.views.Angle.fromAngle
 import com.example.zmice.ui.views.Angle.getAngle
@@ -43,13 +42,12 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 class Game(val settings: DefaultSettings, val mapaPolja: ArrayList<Polje>, val zmica: Zmica){
+
     var foodPosition = arrayListOf(settings.defFoodPosition[0],settings.defFoodPosition[1])
     var growPosition = arrayListOf<Int>()
     var canMove = true
 
-
-
-    fun getFromXY(y:Int,x:Int):Polje{
+    fun getFromXY(y:Int,x:Int): Polje {
         val i = y*settings.x + x;
         return mapaPolja[i]
     }
@@ -88,11 +86,10 @@ class Game(val settings: DefaultSettings, val mapaPolja: ArrayList<Polje>, val z
     }
 
     fun growCheck():Boolean {
-
-        if (!growPosition.isEmpty()) {
-            return zmica.checkIsTail(growPosition[0],growPosition[1])
-        }else
-            return false
+        return if (!growPosition.isEmpty())
+            zmica.checkIsTail(growPosition[0],growPosition[1])
+        else
+            false
     }
 
     fun foodCheck(){
@@ -183,7 +180,6 @@ fun Zmijce(
     }
 
     val viewModel: GameViewModel = viewModel(factory = factory)
-
     val settings by viewModel.settings.observeAsState()
     val zmica by viewModel.zmica.observeAsState()
     val mapaPolja by viewModel.mapaPolja.observeAsState()
@@ -221,7 +217,6 @@ fun Zmijce(
                         game.uvecatiZmijcu(onCall = {score->
                             scores +=score
                             viewModel.score = scores
-
                         })
                     }
                     CoroutineScope(Dispatchers.Default).launch {
