@@ -15,11 +15,7 @@ class MainViewModel(private val repository: GameRepository): ViewModel() {
     }
      fun getBestScoreScope() {
          viewModelScope.launch {
-             Log.d("Provera","1")
             scoreGet()
-             bestScore.value?.let { Log.d("Provera", it.name) }
-             Log.d("Provera","2")
-
          }
      }
          private suspend fun scoreGet(){

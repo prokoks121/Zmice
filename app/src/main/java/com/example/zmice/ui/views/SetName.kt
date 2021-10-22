@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -24,9 +26,10 @@ fun SetName(setName:(String) ->Unit){
     }
 
     Box(modifier = Modifier.fillMaxSize()
+        .background(color = Color(0xFF2E2E2E))
     ,contentAlignment = Alignment.Center
         ) {
-        Column() {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 10.dp),
@@ -34,21 +37,28 @@ fun SetName(setName:(String) ->Unit){
                 fontSize = 35.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center)
-            TextField(value = text, onValueChange = {text = it})
-        if(text != "")
+            TextField(modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
+                value = text,
+                maxLines = 1,
+
+                onValueChange = {
+                    if (it.length <= 8) text = it
+                })
+        if(text == "")
             Box(modifier = Modifier
-                .padding(15.dp)
-                .background(color = Color.White,shape = RoundedCornerShape(15.dp))
+                .background(color = Color(0xFFE98B00),shape = RoundedCornerShape(15.dp))
                 .clickable {
                     setName(text)
                 }
                 ) {
                 Text(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
+                    .padding(horizontal = 35.dp,vertical = 15.dp),
                     text = "Sacuvaj",
                     fontSize = 25.sp,
                     color = Color.Black,
+                    fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center)
             }
         }
