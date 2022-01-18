@@ -11,30 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(entities = arrayOf(Score::class), version = 5, exportSchema = false)
-public abstract class GameDatabase : RoomDatabase() {
+abstract class GameDatabase : RoomDatabase() {
 
     abstract fun scoreDao():ScoreDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: GameDatabase? = null
-
-        fun getDatabase(context: Context): GameDatabase {
-            return INSTANCE
-                ?: synchronized(this) {     // if the INSTANCE is not null, then return it,
-                    // if it is, then create the database
-                    return INSTANCE ?: synchronized(this) {
-                        val instance = Room.databaseBuilder(
-                            context.applicationContext,
-                            GameDatabase::class.java,
-                            "score_database"
-                        ).fallbackToDestructiveMigration()
-                            .build()
-                        INSTANCE = instance
-                        instance
-                    }
-                }
-        }
-    }
 
 }

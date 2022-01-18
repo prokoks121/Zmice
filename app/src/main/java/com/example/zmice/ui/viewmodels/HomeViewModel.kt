@@ -14,23 +14,23 @@ import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
-public class MainViewModel @Inject constructor(
+public class HomeViewModel @Inject constructor(
     private val repository: GameRepository
 ): ViewModel(), LifecycleObserver {
     val bestScore by lazy {
         MutableLiveData<Score>()
     }
-     fun getBestScoreScope() {
-         viewModelScope.launch {
+    fun getBestScoreScope() {
+        viewModelScope.launch {
             scoreGet()
-         }
-     }
-         private suspend fun scoreGet(){
-             withContext(Dispatchers.IO){
-                 bestScore.postValue(repository.getScore())
+        }
+    }
+    private suspend fun scoreGet(){
+        withContext(Dispatchers.IO){
+            bestScore.postValue(repository.getScore())
 
-             }
-         }
+        }
+    }
 
     suspend fun insert(score: Score){
         repository.insert(score)

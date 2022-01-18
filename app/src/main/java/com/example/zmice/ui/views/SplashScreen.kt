@@ -36,6 +36,7 @@ fun SolashScreen(navigate:(String)-> Unit){
     Box(contentAlignment = Alignment.Center,
         modifier = Modifier
         .fillMaxSize()) {
+
         Image(painter = painterResource(id = R.drawable.snake),
                 contentDescription = "Snake",
                 modifier = Modifier.scale(scale.value))

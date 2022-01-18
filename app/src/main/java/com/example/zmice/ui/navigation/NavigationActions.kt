@@ -1,20 +1,8 @@
-package com.example.zmice
+package com.example.zmice.ui.navigation
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.example.zmice.models.Score
-import com.example.zmice.ui.views.Home
-import com.example.zmice.ui.views.SolashScreen
-import com.example.zmice.ui.views.Zmijce
-import com.example.zmice.ui.views.settings
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+
 
 class NavigationActions(private val navController: NavController) {
 

@@ -25,11 +25,13 @@ fun SetName(setName:(String) ->Unit){
         mutableStateOf("")
     }
 
-    Box(modifier = Modifier.fillMaxSize()
-        .background(color = Color(0xFF2E2E2E))
-    ,contentAlignment = Alignment.Center
-        ) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color(0xFF2E2E2E)),
+        contentAlignment = Alignment.Center) {
+
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
             Text(modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 10.dp),
@@ -37,12 +39,12 @@ fun SetName(setName:(String) ->Unit){
                 fontSize = 35.sp,
                 color = Color.White,
                 textAlign = TextAlign.Center)
+
             TextField(modifier = Modifier
                 .fillMaxWidth()
                 .padding(20.dp),
                 value = text,
                 maxLines = 1,
-
                 onValueChange = {
                     if (it.length <= 8) text = it
                 })
@@ -51,10 +53,11 @@ fun SetName(setName:(String) ->Unit){
                 .background(color = Color(0xFFE98B00),shape = RoundedCornerShape(15.dp))
                 .clickable {
                     setName(text)
-                }
-                ) {
+                }) {
+
                 Text(modifier = Modifier
-                    .padding(horizontal = 35.dp,vertical = 15.dp),
+                    .padding(horizontal = 35.dp,
+                             vertical = 15.dp),
                     text = "Sacuvaj",
                     fontSize = 25.sp,
                     color = Color.Black,

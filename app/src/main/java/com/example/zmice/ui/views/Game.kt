@@ -1,7 +1,6 @@
 package com.example.zmice.ui.views
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -25,171 +24,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.zmice.GameApplication
-import com.example.zmice.models.DefaultSettings
-import com.example.zmice.models.Zmica
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.zmice.logic.Angle.fromAngle
+import com.example.zmice.logic.Angle.getAngle
+import com.example.zmice.logic.Angle.getDistance
+import com.example.zmice.logic.GameLogic
 import com.example.zmice.models.Polje
-import com.example.zmice.models.PoljeType
 import com.example.zmice.ui.viewmodels.GameViewModel
-import com.example.zmice.ui.views.Angle.fromAngle
-import com.example.zmice.ui.views.Angle.getAngle
-import com.example.zmice.ui.views.Angle.getDistance
 import kotlinx.coroutines.*
-import kotlin.math.pow
-import kotlin.math.sqrt
-
-class Game(val settings: DefaultSettings, val mapaPolja: ArrayList<Polje>, val zmica: Zmica){
-
-    var foodPosition = arrayListOf(settings.defFoodPosition[0],settings.defFoodPosition[1])
-    var growPosition = arrayListOf<Int>()
-    var canMove = true
-
-    fun getFromXY(y:Int,x:Int): Polje {
-        val i = y*settings.x + x;
-        return mapaPolja[i]
-    }
-
-    fun uvecatiZmijcu(onCall:(Int)-> Unit){
-        zmica.x.add(0,growPosition[0])
-        zmica.y.add(0,growPosition[1])
-        getFromXY(growPosition[0],growPosition[1]).color = Color.White
-        getFromXY(growPosition[0],growPosition[1]).type = PoljeType.ZMIJCA
-        zmica.duzinaZmijce = zmica.duzinaZmijce + 1
-        growPosition.removeFirst()
-        growPosition.removeFirst()
-        onCall(100)
-    }
-
-    fun checkCollision(OnCollisn: () -> Unit){
-        CoroutineScope(Dispatchers.Main).launch {
-
-            if (settings.wall && (zmica.x[zmica.duzinaZmijce-1] == 0 || zmica.y[zmica.duzinaZmijce-1] == 0 || zmica.x[zmica.duzinaZmijce-1] == settings.y-1 || zmica.y[zmica.duzinaZmijce-1] == settings.x-1)) {
-                getFromXY(zmica.x[zmica.duzinaZmijce - 1],zmica.y[zmica.duzinaZmijce - 1]).color = Color.Red
-                canMove = false
-                    delay(500L)
-                    OnCollisn()
-            }
-            else
-                for (i in 0 until zmica.duzinaZmijce-1){
-                    if (zmica.x[i] == zmica.x[zmica.duzinaZmijce-1] && zmica.y[i] == zmica.y[zmica.duzinaZmijce-1]){
-                        getFromXY(zmica.x[zmica.duzinaZmijce-1],zmica.y[zmica.duzinaZmijce-1]).color = Color.Red
-                        canMove = false
-                        delay(500L)
-                        OnCollisn()
-
-                    }
-                }
-        }
-    }
-
-    fun growCheck():Boolean {
-        return if (!growPosition.isEmpty())
-            zmica.checkIsTail(growPosition[0],growPosition[1])
-        else
-            false
-    }
-
-    fun foodCheck(){
-        if (foodPosition.isNotEmpty()) {
-            if (zmica.checkIsHead(foodPosition[0],foodPosition[1])){
-                growPosition.add(foodPosition[0])
-                growPosition.add(foodPosition[1])
-                foodPosition.removeFirst()
-                foodPosition.removeFirst()
-                addFood()
-            }
-        }
-    }
-
-    fun pomeriNaDole(){
-        pomeranje(1,0)
-    }
-    fun pomeriNaGore(){
-        pomeranje(-1,0)
-    }
-    fun pomeriUDesno(){
-        pomeranje(0,1)
-    }
-    fun pomeriULevo(){
-        pomeranje(0,-1)
-    }
-
-    fun pomeranje(x:Int,y: Int){
-
-        getFromXY(zmica.x[0],zmica.y[0]).color = Color.Gray
-        var moveX = zmica.x[zmica.duzinaZmijce-1]+x
-        var moveY = zmica.y[zmica.duzinaZmijce-1]+y
-        if (!settings.wall) {
-            if (moveX > settings.y - 1)
-                moveX = 0
-            else if (moveX < 0)
-                moveX = settings.y - 1
-            if (moveY > settings.x - 1)
-                moveY = 0
-            else if (moveY < 0)
-                moveY = settings.x - 1
-        }
-        getFromXY(moveX,moveY).color = Color.White
-        getFromXY(zmica.x[0],zmica.y[0]).type = PoljeType.SLOBODNO
-        getFromXY(moveX,moveY).type = PoljeType.ZMIJCA
-        zmica.x.add(moveX)
-        zmica.y.add(moveY)
-        zmica.y.removeAt(0)
-        zmica.x.removeAt(0)
-    }
-
-    fun addFood(){
-        var x = 0
-        var y = 0
-        while (true){
-            x = (0 until settings.y).random()
-            y = (0 until settings.x).random()
-            if (
-                (getFromXY(x,y).type != PoljeType.ZMIJCA)
-                && (foodPosition.isEmpty() || x != foodPosition[0] && foodPosition[1] != y)
-                && getFromXY(x,y).type != PoljeType.ZID
-            )
-                break
-        }
-        getFromXY(x,y).type = PoljeType.HRANA
-        getFromXY(x,y).color = Color.Green
-        foodPosition.add(x)
-        foodPosition.add(y)
-    }
-}
 
 @ExperimentalComposeUiApi
 @Composable
-fun Zmijce(
+fun Zmice(
     OnCollisn:(Int) -> Unit,
-   application:Application
+    viewModel: GameViewModel = hiltViewModel()
 ){
-
-    val factory = object : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            val repository = (application as GameApplication).repository
-
-            @Suppress("UNCHECKED_CAST")
-            return GameViewModel(
-                repository = repository
-            ) as T
-        }
-    }
-
-    val viewModel: GameViewModel = viewModel(factory = factory)
     val settings by viewModel.settings.observeAsState()
     val zmica by viewModel.zmica.observeAsState()
-    val mapaPolja by viewModel.mapaPolja.observeAsState()
+    val mapaPolja = viewModel.mapaPolja
     var scores by remember {
         mutableStateOf(viewModel.score)
     }
 
-    val game by remember {
-        mutableStateOf(mapaPolja?.let { settings?.let { it1 -> zmica?.let { it2 -> Game(settings = it1,mapaPolja = it,zmica = it2) } } })
-    }
+    val game = mapaPolja?.let { settings?.let { it1 -> zmica?.let { it2 -> GameLogic(
+            settings = it1,
+            mapaPolja = it,
+            zmica = it2) } } }
+
     Surface(color = MaterialTheme.colors.background) {
         game?.let {game->
             Mapa(game = game,scores = scores,
@@ -215,8 +76,8 @@ fun Zmijce(
                     game.checkCollision { OnCollisn(scores) }
                     if (growCheck) {
                         game.uvecatiZmijcu(onCall = {score->
-                            scores +=score
-                            viewModel.score = scores
+                           scores +=score
+                           viewModel.score = scores
                         })
                     }
                     CoroutineScope(Dispatchers.Default).launch {
@@ -249,17 +110,18 @@ fun Polje(offset: Dp, size: Dp, polje: Polje){
 @SuppressLint("UnrememberedMutableState", "CoroutineCreationDuringComposition")
 @ExperimentalComposeUiApi
 @Composable
-fun Mapa(game:Game, scores: Int, onClick:(Int) -> Unit, updateScore:(Int) -> Unit){
+fun Mapa(game:GameLogic, scores: Int, onClick:(Int) -> Unit, updateScore:(Int) -> Unit){
 
     var direction by remember {
         mutableStateOf(3)
     }
-    val score by  mutableStateOf(scores)
+   val score by  mutableStateOf(scores)
 
     var x1 = 0F
     var y1 = 0F
     var x2 = 0F
     var y2 = 0F
+
 
    LaunchedEffect(score)  {
         if (game.canMove) {
@@ -339,8 +201,6 @@ fun Score(score:Int){
         textAlign = TextAlign.Center,
         fontWeight = FontWeight.Bold
     )
-
-
         Text(modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp),
@@ -351,30 +211,6 @@ fun Score(score:Int){
 
 }
 
-object Angle{
-    fun getAngle(x1: Float, y1: Float, x2: Float, y2: Float): Double {
-        val rad = Math.atan2((y1 - y2).toDouble(), (x2 - x1).toDouble()) + Math.PI
-        return (rad * 180 / Math.PI + 180) % 360
-    }
-    fun inRange(angle: Double, init: Float, end: Float): Boolean {
-        return angle >= init && angle < end
-    }
-    fun fromAngle(angle: Double): Int {
-        return if (inRange(angle, 45F, 135F)) {
-            1
-        } else if (inRange(angle, 0F, 45F) || inRange(angle, 315F, 360F)) {
-            2
-        } else if (inRange(angle, 225F, 315F)) {
-            3
-        } else {
-            4
-        }
-    }
-    fun getDistance(x1: Float, y1: Float, x2: Float, y2: Float):Float{
-        val distance = sqrt((x1-x2).pow(2) + (y1-y2).pow(2))
-        return distance
-    }
 
-}
 
 

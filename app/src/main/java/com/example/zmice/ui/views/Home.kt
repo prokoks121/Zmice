@@ -20,11 +20,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.zmice.GameApplication
 import com.example.zmice.R
 import com.example.zmice.models.DefaultSettings
 import com.example.zmice.models.Score
 import com.example.zmice.repository.GameRepository
+import com.example.zmice.ui.viewmodels.HomeViewModel
+import com.example.zmice.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -32,12 +38,13 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun Home(navigateTo:(String)->Unit, application: GameApplication,score:State<Score?>){
+fun Home(navigateTo:(String)->Unit,
+        score:State<Score?>,
+         viewModel: HomeViewModel = hiltViewModel()){
 
     val bestScore by remember(score.value){
         mutableStateOf(score.value)
     }
-
 
     Surface(modifier = Modifier
         .fillMaxSize()
@@ -54,7 +61,7 @@ fun Home(navigateTo:(String)->Unit, application: GameApplication,score:State<Sco
                             .width(100.dp)
                             .height(55.dp)
                             .clickable {
-                                application.repository.setSettings(DefaultSettings(wall = true))
+                                viewModel.setSettings(DefaultSettings(wall = true))
                                 navigateTo("Game")
                             }
                             .clip(shape = RoundedCornerShape(10.dp)),
@@ -67,7 +74,7 @@ fun Home(navigateTo:(String)->Unit, application: GameApplication,score:State<Sco
                         .width(100.dp)
                         .height(55.dp)
                         .clickable {
-                            application.repository.setSettings(DefaultSettings(wall = false))
+                            viewModel.setSettings(DefaultSettings(wall = false))
                             navigateTo("Game")
                         }
                         .clip(shape = RoundedCornerShape(10.dp)),

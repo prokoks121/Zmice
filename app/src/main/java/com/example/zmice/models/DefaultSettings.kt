@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.dp
 
 data class DefaultSettings(
 
-    var vremePoteza:Long = 500L,
+    var vremePoteza:Long = 800L,
     var x:Int = 17,
     var y:Int = 22,
     var size: Dp = 13.dp,
