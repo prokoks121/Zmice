@@ -2,6 +2,10 @@ package com.example.zmice.ui.views
 
 import android.annotation.SuppressLint
 import android.view.MotionEvent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.AnimationState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -92,10 +96,15 @@ fun Zmice(
 @Composable
 fun Polje(offset: Dp, size: Dp, polje: Polje){
     val type by mutableStateOf(polje)
+    val animation by animateColorAsState(targetValue = type.color,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = FastOutSlowInEasing
+        ))
     Canvas(modifier = Modifier
         .size(size+offset)){
         drawRoundRect(
-            color = type.color,
+            color = animation,
             size = Size(
                 width = size.toPx(),
                 height = size.toPx()
